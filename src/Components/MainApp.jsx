@@ -1,7 +1,8 @@
 import { BlockStack, EmptyState, Icon, LegacyCard, Select, TextField } from '@shopify/polaris';
 import { SearchIcon } from '@shopify/polaris-icons';
-import { useCallback, useContext, useMemo, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 
+import getTodoFromLocalStorage from '../utils/getTodoFromLocalStorge';
 import CreateTaskModal from './Common/CreateTaskModal';
 import { TaskCard } from './Common/TaskCard';
 import ToastComponent from './Common/ToastComponent';
@@ -9,25 +10,25 @@ import { TODO_CONTEXT } from './Context/TodoContext';
 export const MainApp = () => {
     const [textFieldValue, setTextFieldValue] = useState('');
     const [selected, setSelected] = useState('today');
-    // const [todoSearchResult, setTodoSearchResult] = useState([]);
+
     const {
         isCreateSuccessToastActive,
-        setIsCreateSuccessToastActive,
+        isDeleteSuccessToastActive,
+        toggleDeleteSuccessToast,
+        toggleAddSuccessToast,
+        toggleTodoStatusChangeToast,
+        isTodoStatusToastActive,
         todoList,
         setTodoList
     } = useContext(TODO_CONTEXT);
 
-    const todoFromLocalStorage = useMemo(() => {
-        return localStorage.getItem('todoItems') ? JSON.parse(localStorage.getItem('todoItems')) : [];
-    }, []);
+    const todoFromLocalStorage = getTodoFromLocalStorage()
     const handleSearchResult = useCallback((query) => {
         const searchResultuntTodos = todoFromLocalStorage.filter((todo) => {
             return todo.todoName
                 .toLocaleLowerCase()
                 .includes(query.toLocaleLowerCase().trim());
         }) || [];
-
-        console.log("✨ ~ MainApp ~ todoList:", searchResultuntTodos)
         setTodoList(searchResultuntTodos);
     }, [setTodoList, todoFromLocalStorage]);
 
@@ -48,10 +49,7 @@ export const MainApp = () => {
         (value) => setSelected(value),
         [],
     );
-    const toggleAddSuccessToast = useCallback(
-        () => setIsCreateSuccessToastActive(!isCreateSuccessToastActive),
-        [isCreateSuccessToastActive, setIsCreateSuccessToastActive]
-    );
+
 
     const options = [
         { label: 'To Do', value: 'todo' },
@@ -84,22 +82,15 @@ export const MainApp = () => {
                     onChange={handleSelectChange}
                     value={selected}
                 />
-                {/* <Button
-                    icon={PlusIcon}
-                    variant="primary"
-                >
-                    Add Task
-                </Button> */}
-                <CreateTaskModal
-                    toggleAddSuccessToast={toggleAddSuccessToast}
-                />
+
+                <CreateTaskModal />
             </div>
 
             <div className="mt-[50px]">
                 <BlockStack gap="500">
                     {
                         todoList?.length > 0 ?
-                            todoList?.sort((a, b) => b.createdAt - a.createdAt)
+                            todoList?.sort((a, b) => b?.createdAt - a?.createdAt)
                                 .map((todo, i) => {
                                     return (
                                         <TaskCard key={i} todo={todo} />
@@ -109,10 +100,10 @@ export const MainApp = () => {
                             (
                                 <LegacyCard subdued>
                                     <EmptyState
-                                        heading="Your currently don't have any todo item."
+                                        heading="No todo item found!"
                                         image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
                                     >
-                                        <p>Click on the add todo button to add new!</p>
+                                        <p>Click on the add todo button to add new</p>
                                     </EmptyState>
                                 </LegacyCard>
                             )
@@ -124,6 +115,18 @@ export const MainApp = () => {
                 content="Todo Added Successfully"
                 toggle={toggleAddSuccessToast}
                 isActive={isCreateSuccessToastActive}
+
+            />
+            <ToastComponent
+                content="Todo Deleted Successfully"
+                toggle={toggleDeleteSuccessToast}
+                isActive={isDeleteSuccessToastActive}
+
+            />
+            <ToastComponent
+                content="Todo Status Changed Successfully"
+                toggle={toggleTodoStatusChangeToast}
+                isActive={isTodoStatusToastActive}
 
             />
         </div>

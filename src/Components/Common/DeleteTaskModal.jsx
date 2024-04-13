@@ -1,31 +1,37 @@
+import { Modal, TextContainer } from '@shopify/polaris';
+import { useCallback, useContext } from 'react';
+import getTodoFromLocalStorage from '../../utils/getTodoFromLocalStorge';
+import { TODO_CONTEXT } from '../Context/TodoContext';
 
-import { Button, Modal, TextContainer } from '@shopify/polaris';
-import { DeleteIcon } from '@shopify/polaris-icons';
-import { useCallback, useState } from 'react';
+export const DeleteTaskModal = ({ todoName, active, setActive, createdAt }) => {
+    const { setTodoList, toggleDeleteSuccessToast } = useContext(TODO_CONTEXT)
+    const handleChange = useCallback(() => setActive(!active), [active, setActive]);
 
-export const DeleteTaskModal = ({ todoName }) => {
-    const [active, setActive] = useState(false);
+    const handleDeleteTodo = () => {
+        // console.log("✨ ~ DeleteTaskModal ~ createdAt:", createdAt)
+        let todos = getTodoFromLocalStorage();
+        todos.filter((todo) => {
+            if (todo.createdAt === createdAt) {
+                todos.splice(todos.indexOf(todo), 1);
+            }
+        });
+        localStorage.setItem("todoItems", JSON.stringify(todos));
+        console.log("✨ ~ handleDeleteTodo ~ todolist:", todos);
+        setTodoList(todos);
+        toggleDeleteSuccessToast();
+        handleChange();
+    }
 
-    const handleChange = useCallback(() => setActive(!active), [active]);
-
-    const activator = <Button
-        icon={DeleteIcon}
-        variant="secondary"
-        tone='critical'
-        onClick={handleChange}
-        accessibilityLabel="Edit"
-    />;
 
     return (
         <Modal
-            activator={activator}
             open={active}
             onClose={handleChange}
             title={`${todoName} !`}
             sectioned
             primaryAction={{
                 content: 'Delete',
-                onAction: handleChange,
+                onAction: handleDeleteTodo,
                 destructive: true,
             }}
             secondaryActions={[
@@ -38,11 +44,10 @@ export const DeleteTaskModal = ({ todoName }) => {
             <Modal.Section>
                 <TextContainer>
                     <p>
-                        Are you sure to delete this. Once it&apos;s  deleted will never restored!
+                        Are you sure to delete this. Once it&apos;s deleted, it will never be restored!
                     </p>
                 </TextContainer>
             </Modal.Section>
         </Modal>
     );
 }
-

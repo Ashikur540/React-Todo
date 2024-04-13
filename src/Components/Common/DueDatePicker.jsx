@@ -3,32 +3,17 @@ import { CalendarIcon } from "@shopify/polaris-icons";
 import { memo, useEffect, useRef, useState } from "react";
 
 let DueDatePicker = ({ selectedDate, setSelectedDate }) => {
-    // function nodeContainsDescendant(rootNode, descendant) {
-    //     if (rootNode === descendant) {
-    //         return true;
-    //     }
-    //     let parent = descendant.parentNode;
-    //     while (parent != null) {
-    //         if (parent === rootNode) {
-    //             return true;
-    //         }
-    //         parent = parent.parentNode;
-    //     }
-    //     return false;
-    // }
+console.log("✨ ~ DueDatePicker ~ selectedDate:", selectedDate)
+
     const [visible, setVisible] = useState(false);
     const [{ month, year }, setDate] = useState({
         month: selectedDate.getMonth(),
         year: selectedDate.getFullYear(),
     });
-    const formattedValue = selectedDate.toISOString().slice(0, 10);
+    const formattedValue = selectedDate.toLocaleDateString();
     console.log("✨ ~ DueDatePicker ~ formattedValue:", formattedValue)
     const datePickerRef = useRef(null);
-    // function isNodeWithinPopover(node) {
-    //     return datePickerRef?.current
-    //         ? nodeContainsDescendant(datePickerRef.current, node)
-    //         : false;
-    // }
+ 
     function handleInputValueChange() {
         console.log("handleInputValueChange");
     }
@@ -45,8 +30,8 @@ let DueDatePicker = ({ selectedDate, setSelectedDate }) => {
     useEffect(() => {
         if (selectedDate) {
             setDate({
-                month: selectedDate.getMonth(),
-                year: selectedDate.getFullYear(),
+                month: selectedDate?.getMonth(),
+                year: selectedDate?.getFullYear(),
             });
         }
     }, [selectedDate]);
