@@ -5,13 +5,15 @@ import { memo, useCallback, useContext, useState } from 'react';
 import { TODO_CONTEXT } from '../Context/TodoContext';
 import DueDatePicker from './DueDatePicker';
 let CreateTaskModal = () => {
-    const [selectedDate, setSelectedDate] = useState(new Date());
+    // const [selectedDate, setSelectedDate] = useState(new Date());
     const {
         todoList,
+        setTodoList,
         toggleAddSuccessToast,
         todoName, setTodoName,
         todoPriority, setTodoPriority,
         additionalNotes, setAddditionalNotes,
+        selectedDate, setSelectedDate,
         isTodoCompleted,
         handleChangePriority,
         handleChangeNotesText,
@@ -38,18 +40,17 @@ let CreateTaskModal = () => {
         const today = new Date()
         const createdAt = today.getTime();
         // const createdDate = today.toLocaleDateString()
-        const taskData = {
-            createdAt, todoName, todoDueDate:selectedDate, todoPriority, additionalNotes, createdDate:today, completed:isTodoCompleted
+        const newTask = {
+            createdAt, todoName, todoDueDate: selectedDate, todoPriority, additionalNotes, createdDate: today, completed: isTodoCompleted
         }
         // console.log("✨ ~ handleCreateTask ~ taskData:", taskData)
-        todoList.push(taskData);
-        console.log(todoList);
-        // save into the local storage.
-        localStorage.setItem("todoItems", JSON.stringify(todoList))
+        const updatedTodoList = [...todoList, newTask]; 
+        setTodoList(updatedTodoList); 
+        localStorage.setItem("todoItems", JSON.stringify(updatedTodoList)); // Update local storage
         toggleTaskCreateModal();
         toggleAddSuccessToast();
         resetForm()
-        
+
     }
 
 
@@ -67,6 +68,7 @@ let CreateTaskModal = () => {
         setTodoName("");
         setTodoPriority("high")
         console.log("✨ ~ CreateTaskModal ~ selectedDate:", selectedDate)
+        console.log("✨ ~ CreateTaskModal ~ selectedDate:", todoName)
     }
 
     return (

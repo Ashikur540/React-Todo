@@ -2,8 +2,20 @@ import { BlockStack, Box, Card, DatePicker, Icon, Popover, TextField } from "@sh
 import { CalendarIcon } from "@shopify/polaris-icons";
 import { memo, useEffect, useRef, useState } from "react";
 
-let DueDatePicker = ({ selectedDate, setSelectedDate }) => {
-console.log("✨ ~ DueDatePicker ~ selectedDate:", selectedDate)
+let DueDatePicker = ({ selectedDate, setSelectedDate, todoDueDate }) => {
+    console.log("✨ ~ DueDatePicker ~ todoDueDate:", todoDueDate)
+
+    useEffect(() => {
+        if (todoDueDate) {
+            setSelectedDate(new Date(todoDueDate))
+        }
+        else {
+            setSelectedDate(new Date())
+        }
+
+    }, [setSelectedDate, todoDueDate])
+
+
 
     const [visible, setVisible] = useState(false);
     const [{ month, year }, setDate] = useState({
@@ -11,9 +23,9 @@ console.log("✨ ~ DueDatePicker ~ selectedDate:", selectedDate)
         year: selectedDate.getFullYear(),
     });
     const formattedValue = selectedDate.toLocaleDateString();
-    console.log("✨ ~ DueDatePicker ~ formattedValue:", formattedValue)
+    // console.log("✨ ~ DueDatePicker ~ formattedValue:", formattedValue)
     const datePickerRef = useRef(null);
- 
+
     function handleInputValueChange() {
         console.log("handleInputValueChange");
     }

@@ -1,23 +1,26 @@
 
 import { BlockStack, FormLayout, Modal, Select, TextField } from '@shopify/polaris';
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useContext } from 'react';
 import { TODO_CONTEXT } from '../Context/TodoContext';
 import DueDatePicker from './DueDatePicker';
 
 export const EditTaskModal = ({ todo, EditModalActive, setEditModalActive }) => {
     const { todoName, todoDueDate, todoPriority, additionalNotes } = todo
-    console.log("✨ ~ EditTaskModal ~ todoDueDate:", new Date(todoDueDate))
+    // console.log("✨ ~ EditTaskModal ~ todoDueDate:", new Date(todoDueDate))
 
-    const [selectedDate, setSelectedDate] = useState(new Date(todoDueDate));
-    console.log("✨ ~ EditTaskModal ~ selectedDate:", selectedDate)
+    // const [selectedDate, setSelectedDate] = useState(new Date(todoDueDate));
+    // console.log("✨ ~ EditTaskModal ~ selectedDate:", selectedDate)
+
     const {
+        selectedDate, setSelectedDate,
         setTodoName,
         setTodoPriority,
         setAddditionalNotes,
         handleChangePriority,
         handleChangeNotesText,
         handleChangeTodoName,
-    } = useContext(TODO_CONTEXT)
+    } = useContext(TODO_CONTEXT);
+
     const toggleTodoEditModal = useCallback(() =>
         setEditModalActive(!EditModalActive),
         [EditModalActive, setEditModalActive]);
@@ -42,7 +45,10 @@ export const EditTaskModal = ({ todo, EditModalActive, setEditModalActive }) => 
     },
         [setAddditionalNotes, setSelectedDate, setTodoName, setTodoPriority],)
 
-
+    // useEffect(() => {
+    //     setSelectedDate(new Date(todoDueDate))
+    //     console.log("✨ ~ EditTaskModal ~ useEffect ~ selectedDate:", selectedDate)
+    // }, [selectedDate, setSelectedDate, todo.todoDueDate, todoDueDate])
     return (
         <>
             <Modal
@@ -74,6 +80,7 @@ export const EditTaskModal = ({ todo, EditModalActive, setEditModalActive }) => 
                                 <DueDatePicker
                                     selectedDate={selectedDate}
                                     setSelectedDate={setSelectedDate}
+                                    todoDueDate={todoDueDate}
                                 />
                                 <Select
                                     label="Priority Level"

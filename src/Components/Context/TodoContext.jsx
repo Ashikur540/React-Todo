@@ -13,7 +13,7 @@ const TodoProvider = ({ children }) => {
     const [todoName, setTodoName] = useState("");
     const [todoPriority, setTodoPriority] = useState('high');
     const [additionalNotes, setAddditionalNotes] = useState("");
-
+    const [selectedDate, setSelectedDate] = useState(new Date());
     const initialTodos = getTodoFromLocalStorage()
     const [todoList, setTodoList] = useState(initialTodos)
     const [isCreateSuccessToastActive, setIsCreateSuccessToastActive] = useState(false);
@@ -46,7 +46,7 @@ const TodoProvider = ({ children }) => {
                 todoList,
                 setTodoList,
                 todoName, setTodoName,
-                // selectedDate, setSelectedDate,
+                selectedDate, setSelectedDate,
                 todoPriority, setTodoPriority,
                 additionalNotes, setAddditionalNotes,
                 isTodoCompleted, setIsTodoCompleted,
