@@ -6,8 +6,8 @@ import { DeleteTaskModal } from './DeleteTaskModal';
 import { EditTaskModal } from './EditTaskModal';
 
 const TaskCardOption = ({ todo }) => {
-    const { toggleTodoStatusChangeToast, isTodoCompleted, setIsTodoCompleted ,  setTodoList} = useContext(TODO_CONTEXT);
-    
+    const { toggleTodoStatusChangeToast, isTodoCompleted, setIsTodoCompleted, setTodoList } = useContext(TODO_CONTEXT);
+
     const { todoName, createdAt } = todo;
     const [popoverActive, setPopoverActive] = useState(false);
     const [deleteModalActive, setDeleteModalActive] = useState(false);
@@ -78,11 +78,13 @@ const TaskCardOption = ({ todo }) => {
                 active={deleteModalActive}
                 setActive={setDeleteModalActive}
             />
-            <EditTaskModal
-                todo={todo}
-                EditModalActive={EditModalActive}
-                setEditModalActive={setEditModalActive}
-            />
+            {
+                EditModalActive && <EditTaskModal
+                    todo={todo}
+                    EditModalActive={EditModalActive}
+                    setEditModalActive={setEditModalActive}
+                />
+            }
         </>
     );
 }

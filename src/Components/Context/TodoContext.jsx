@@ -12,7 +12,7 @@ const TodoProvider = ({ children }) => {
 
     const [todoName, setTodoName] = useState("");
     const [todoPriority, setTodoPriority] = useState('high');
-    const [additionalNotes, setAddditionalNotes] = useState("");
+    const [additionalNotes, setAdditionalNotes] = useState("");
     const [selectedDate, setSelectedDate] = useState(new Date());
     const initialTodos = getTodoFromLocalStorage()
     const [todoList, setTodoList] = useState(initialTodos)
@@ -34,12 +34,7 @@ const TodoProvider = ({ children }) => {
         () => setIsTodoStatusToastActive(!isTodoStatusToastActive),
         [isTodoStatusToastActive]
     );
-    const handleChangeTodoName = useCallback((value) => setTodoName(value), []);
-    const handleChangeNotesText = useCallback((value) => setAddditionalNotes(value), []);
-    const handleChangePriority = useCallback(
-        (value) => setTodoPriority(value),
-        [],
-    );
+    
     return (
         <TODO_CONTEXT.Provider
             value={{
@@ -48,11 +43,11 @@ const TodoProvider = ({ children }) => {
                 todoName, setTodoName,
                 selectedDate, setSelectedDate,
                 todoPriority, setTodoPriority,
-                additionalNotes, setAddditionalNotes,
+                additionalNotes, setAdditionalNotes,
                 isTodoCompleted, setIsTodoCompleted,
-                handleChangePriority,
-                handleChangeNotesText,
-                handleChangeTodoName,
+                // handleChangePriority,
+                // handleChangeNotesText,
+                // handleChangeTodoName,
                 isCreateSuccessToastActive,
                 setIsCreateSuccessToastActive,
                 isDeleteSuccessToastActive,

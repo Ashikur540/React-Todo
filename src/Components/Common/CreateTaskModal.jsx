@@ -12,18 +12,28 @@ let CreateTaskModal = () => {
         toggleAddSuccessToast,
         todoName, setTodoName,
         todoPriority, setTodoPriority,
-        additionalNotes, setAddditionalNotes,
+        additionalNotes, setAdditionalNotes,
         selectedDate, setSelectedDate,
         isTodoCompleted,
-        handleChangePriority,
-        handleChangeNotesText,
-        handleChangeTodoName,
+        // handleChangePriority,
+        // handleChangeNotesText,
+        // handleChangeTodoName,
     } = useContext(TODO_CONTEXT)
     const [showTaskModal, setShowTaskModal] = useState(false);
 
 
-    const toggleTaskCreateModal = useCallback(() => setShowTaskModal(!showTaskModal), [showTaskModal]);
+    const toggleTaskCreateModal = useCallback(
+        () => setShowTaskModal(!showTaskModal), [showTaskModal]);
 
+    const handleChangeTodoName = useCallback((value) => setTodoName(value), [setTodoName]);
+
+    const handleChangeNotesText = useCallback(
+        (value) => setAdditionalNotes(value), [setAdditionalNotes]);
+
+    const handleChangePriority = useCallback(
+        (value) => setTodoPriority(value),
+        [setTodoPriority],
+    );
 
     const activator =
         <Button
@@ -44,8 +54,8 @@ let CreateTaskModal = () => {
             createdAt, todoName, todoDueDate: selectedDate, todoPriority, additionalNotes, createdDate: today, completed: isTodoCompleted
         }
         // console.log("✨ ~ handleCreateTask ~ taskData:", taskData)
-        const updatedTodoList = [...todoList, newTask]; 
-        setTodoList(updatedTodoList); 
+        const updatedTodoList = [...todoList, newTask];
+        setTodoList(updatedTodoList);
         localStorage.setItem("todoItems", JSON.stringify(updatedTodoList)); // Update local storage
         toggleTaskCreateModal();
         toggleAddSuccessToast();
@@ -64,7 +74,7 @@ let CreateTaskModal = () => {
 
     const resetForm = () => {
         setSelectedDate(new Date());
-        setAddditionalNotes("");
+        setAdditionalNotes("");
         setTodoName("");
         setTodoPriority("high")
         console.log("✨ ~ CreateTaskModal ~ selectedDate:", selectedDate)
