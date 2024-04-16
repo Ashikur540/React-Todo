@@ -49,6 +49,7 @@ let CreateTaskModal = () => {
         toggleTaskCreateModal();
         toggleAddSuccessToast();
         resetForm()
+        
     }
 
 
@@ -65,6 +66,7 @@ let CreateTaskModal = () => {
         setAddditionalNotes("");
         setTodoName("");
         setTodoPriority("high")
+        console.log("✨ ~ CreateTaskModal ~ selectedDate:", selectedDate)
     }
 
     return (

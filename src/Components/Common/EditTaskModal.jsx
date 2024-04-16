@@ -6,6 +6,7 @@ import DueDatePicker from './DueDatePicker';
 
 export const EditTaskModal = ({ todo, EditModalActive, setEditModalActive }) => {
     const { todoName, todoDueDate, todoPriority, additionalNotes } = todo
+    console.log("✨ ~ EditTaskModal ~ todoDueDate:", new Date(todoDueDate))
 
     const [selectedDate, setSelectedDate] = useState(new Date(todoDueDate));
     console.log("✨ ~ EditTaskModal ~ selectedDate:", selectedDate)

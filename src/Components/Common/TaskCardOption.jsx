@@ -1,13 +1,13 @@
 import { ActionList, Button, Popover } from '@shopify/polaris';
 import { MenuHorizontalIcon } from '@shopify/polaris-icons';
 import { useCallback, useContext, useState } from 'react';
+import { TODO_CONTEXT } from '../Context/TodoContext';
 import { DeleteTaskModal } from './DeleteTaskModal';
 import { EditTaskModal } from './EditTaskModal';
-import { TODO_CONTEXT } from '../Context/TodoContext';
 
 const TaskCardOption = ({ todo }) => {
-    const { toggleTodoStatusChangeToast, isTodoCompleted, setIsTodoCompleted } = useContext(TODO_CONTEXT);
-    console.log("✨ ~ TaskCardOption ~ isTodoCompleted:", isTodoCompleted)
+    const { toggleTodoStatusChangeToast, isTodoCompleted, setIsTodoCompleted ,  setTodoList} = useContext(TODO_CONTEXT);
+    
     const { todoName, createdAt } = todo;
     const [popoverActive, setPopoverActive] = useState(false);
     const [deleteModalActive, setDeleteModalActive] = useState(false);
@@ -40,9 +40,10 @@ const TaskCardOption = ({ todo }) => {
             return item;
         }) || [];
         localStorage.setItem('todoItems', JSON.stringify(newTodos));
+        setTodoList(newTodos);
         toggleTodoStatusChangeToast();
         togglePopoverActive();
-    }, [isTodoCompleted, setIsTodoCompleted, createdAt, toggleTodoStatusChangeToast, togglePopoverActive]);
+    }, [setIsTodoCompleted, isTodoCompleted, setTodoList, toggleTodoStatusChangeToast, togglePopoverActive, createdAt]);
 
     return (
         <>
