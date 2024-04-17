@@ -1,11 +1,12 @@
 
 import { BlockStack, FormLayout, Modal, Select, TextField } from '@shopify/polaris';
 import { useCallback, useContext, useEffect } from 'react';
+import { getFormatedDate } from '../../utils/getFormatedDate';
 import { TODO_CONTEXT } from '../Context/TodoContext';
 import DueDatePicker from './DueDatePicker';
 
 export const EditTaskModal = ({ todo, EditModalActive, setEditModalActive }) => {
-    const { todoName: title, todoDueDate: dueDate, todoPriority: priority, additionalNotes: notes, createdAt } = todo
+    const { todoName: title, todoDueDate: dueDate, todoPriority: priority, additionalNotes: notes, createdAt, createdDate } = todo
 
 
 
@@ -83,7 +84,7 @@ export const EditTaskModal = ({ todo, EditModalActive, setEditModalActive }) => 
         <Modal
             open={EditModalActive}
             onClose={toggleTodoEditModal}
-            title={`Edit ${todoName}`}
+            title={`Edit ${todoName} - created on ${getFormatedDate(new Date(createdDate))}`}
             primaryAction={{
                 content: 'Save',
                 onAction: handleEditTask,
