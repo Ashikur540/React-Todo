@@ -19,6 +19,8 @@ const TodoProvider = ({ children }) => {
     const [isCreateSuccessToastActive, setIsCreateSuccessToastActive] = useState(false);
     const [isDeleteSuccessToastActive, setIsDeleteSuccessToastActive] = useState(false);
     const [isTodoStatusToastActive, setIsTodoStatusToastActive] = useState(false);
+    const [isTodoEditSuccessToastActive, setIsTodoEditSuccessToastActive] = useState(false);
+
 
 
     // fucntions
@@ -34,7 +36,11 @@ const TodoProvider = ({ children }) => {
         () => setIsTodoStatusToastActive(!isTodoStatusToastActive),
         [isTodoStatusToastActive]
     );
-    
+    const toggleEditSuccessToast = useCallback(
+        () => setIsTodoEditSuccessToastActive(!isTodoEditSuccessToastActive),
+        [isTodoEditSuccessToastActive]
+    );
+
     return (
         <TODO_CONTEXT.Provider
             value={{
@@ -54,9 +60,12 @@ const TodoProvider = ({ children }) => {
                 setIsDeleteSuccessToastActive,
                 isTodoStatusToastActive,
                 setIsTodoStatusToastActive,
+                isTodoEditSuccessToastActive,
+                setIsTodoEditSuccessToastActive,
                 toggleDeleteSuccessToast,
                 toggleAddSuccessToast,
-                toggleTodoStatusChangeToast
+                toggleTodoStatusChangeToast,
+                toggleEditSuccessToast
 
             }}
         >
