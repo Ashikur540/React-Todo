@@ -77,12 +77,6 @@ let CreateTaskModal = () => {
         resetForm()
 
     }
-
-
-    useEffect(() => {
-        console.log("✨ ~ CreateTaskModal ~ todoList", todoList)
-    }, [todoList])
-
     const priorityOptions = [
         { label: 'Low', value: 'low' },
         { label: 'Medium', value: 'medium' },

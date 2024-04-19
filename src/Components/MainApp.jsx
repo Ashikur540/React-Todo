@@ -1,6 +1,6 @@
-import { BlockStack, Button, EmptyState, Icon, LegacyCard, Select, TextField } from '@shopify/polaris';
+import { BlockStack, Button, EmptyState, Icon, LegacyCard, Pagination, Select, TextField } from '@shopify/polaris';
 import { SearchIcon, XIcon } from '@shopify/polaris-icons';
-import { useCallback, useContext, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import getTodoFromLocalStorage from '../utils/getTodoFromLocalStorge';
 import CreateTaskModal from './Common/CreateTaskModal';
 import { TaskCard } from './Common/TaskCard';
@@ -10,7 +10,11 @@ export const MainApp = () => {
     const [textFieldValue, setTextFieldValue] = useState('');
     const [selectedStatus, setSelectedStatus] = useState('status');
     const [selectedPriority, setSelectedPriority] = useState('priority');
-    const [activeClearButton, setActiveClearButton] = useState(false)
+    const [activeClearButton, setActiveClearButton] = useState(false);
+    const [TotalDataPerPage, setTotalDataPerPage] = useState(10);
+    const [totalTodoDataCount, setTotalTodoDataCount] = useState(getTodoFromLocalStorage().length);
+    const [currentPageNo, setCurrentPageNo] = useState(1);
+    const totalPage = Math.ceil(totalTodoDataCount / TotalDataPerPage);
     const {
         isCreateSuccessToastActive,
         isDeleteSuccessToastActive,
@@ -24,7 +28,11 @@ export const MainApp = () => {
         setTodoList
     } = useContext(TODO_CONTEXT);
 
-    const todoFromLocalStorage = getTodoFromLocalStorage()
+    const [paginatedTodos, setPaginatedTodos] = useState([]);
+
+    const todoFromLocalStorage = getTodoFromLocalStorage();
+
+    // handle serach 
     const handleSearchResult = useCallback((query) => {
         const searchResultuntTodos = todoFromLocalStorage.filter((todo) => {
             return todo.todoName
@@ -79,13 +87,43 @@ export const MainApp = () => {
         { label: 'Low', value: 'low' },
     ];
 
-    let sortedTodos = useMemo(() => {
-        return todoList?.length && todoList?.sort((todoCurrent, todoNext) => todoNext?.createdAt - todoCurrent?.createdAt) || [];
-    }, [todoList]);
+    // this handles slicing the todos from the whole todList according to the pgaination 
+    const handlePaginateTodos = useCallback(() => {
+        const startIndex = (currentPageNo - 1) * TotalDataPerPage;
+        const endIndex = startIndex + TotalDataPerPage;
+        const paginated = todoList.slice(startIndex, endIndex);
+        setPaginatedTodos(paginated);
+    }, [TotalDataPerPage, currentPageNo, todoList]);
+
+    useEffect(() => {
+        handlePaginateTodos();
+    }, [handlePaginateTodos]);
+
+    // this is todos of the current index -> sorted by default 
+    let defaultSortedTodos = useMemo(() => {
+        return paginatedTodos?.length && paginatedTodos?.sort((todoCurrent, todoNext) => todoNext?.createdAt - todoCurrent?.createdAt) || [];
+    }, [paginatedTodos]);
+
+    const handlePaginateNext = useCallback(() => {
+        setCurrentPageNo(currentPageNo + 1)
+        if (currentPageNo >= totalPage) {
+            setCurrentPageNo(1)
+        }
+        handlePaginateTodos()
+    }, [currentPageNo, handlePaginateTodos, totalPage]);
+
+
+    const handlePaginatePrevious = useCallback(() => {
+        setCurrentPageNo(currentPageNo - 1);
+        if (currentPageNo <= 1) {
+            setCurrentPageNo(totalPage)
+        }
+        handlePaginateTodos()
+    }, [currentPageNo, handlePaginateTodos, totalPage])
 
 
     const filterTodos = useCallback((todos, status, priority) => {
-        // If both filters are set to their default values, return all todos.
+        // If both filters are set to their default values, return all todos. this todos will show initially
         if (status === 'status' && priority === 'priority') {
             return todos;
         }
@@ -107,7 +145,7 @@ export const MainApp = () => {
 
     //  if user selects any filter
     if (selectedPriority !== 'priority' || selectedStatus !== 'status') {
-        sortedTodos = filterTodos(sortedTodos, selectedStatus, selectedPriority);
+        defaultSortedTodos = filterTodos(paginatedTodos, selectedStatus, selectedPriority);
     }
 
 
@@ -117,7 +155,6 @@ export const MainApp = () => {
         setTodoList(todoFromLocalStorage);
         setActiveClearButton(false)
     }, [setTodoList, todoFromLocalStorage])
-
 
     return (
         <div className='mt-[65px]'>
@@ -169,8 +206,8 @@ export const MainApp = () => {
                 }
                 <BlockStack gap="500">
                     {
-                        (sortedTodos.length > 0) ?
-                            sortedTodos.map((todo, i) => {
+                        (defaultSortedTodos?.length > 0) ?
+                            defaultSortedTodos?.map((todo, i) => {
                                 return (
                                     <TaskCard key={i} todo={todo} />
                                 )
@@ -189,6 +226,21 @@ export const MainApp = () => {
                     }
                 </BlockStack>
 
+                <div
+                    style={{
+                        border: '1px solid var(--p-color-border)'
+                    }}
+                    className="mt-8 mb-4 rounded-md"
+                >
+                    <Pagination
+                        onPrevious={handlePaginatePrevious}
+                        onNext={handlePaginateNext}
+                        type="page"
+                        hasNext
+                        hasPrevious
+                        label={`${currentPageNo}-${totalPage} of ${todoList?.length} todo items`}
+                    />
+                </div>
             </div>
 
             <ToastComponent
