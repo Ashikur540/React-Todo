@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
 import { Text } from '@shopify/polaris';
+import { useEffect, useState } from 'react';
 import { getFormatedDate } from '../utils/getFormatedDate';
 
 export const AppHeader = () => {

@@ -1,8 +1,6 @@
-import { BlockStack, EmptyState, Icon, LegacyCard, Select, TextField } from '@shopify/polaris';
-import { SearchIcon } from '@shopify/polaris-icons';
-import { useCallback, useContext, useState } from 'react';
-
-import { useEffect } from 'react';
+import { BlockStack, Button, EmptyState, Icon, LegacyCard, Select, TextField } from '@shopify/polaris';
+import { SearchIcon, XIcon } from '@shopify/polaris-icons';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import getTodoFromLocalStorage from '../utils/getTodoFromLocalStorge';
 import CreateTaskModal from './Common/CreateTaskModal';
 import { TaskCard } from './Common/TaskCard';
@@ -10,9 +8,9 @@ import ToastComponent from './Common/ToastComponent';
 import { TODO_CONTEXT } from './Context/TodoContext';
 export const MainApp = () => {
     const [textFieldValue, setTextFieldValue] = useState('');
-    const [selectedStatus, setSelectedStatus] = useState('todo');
-    const [selectedPriority, setSelectedPriority] = useState('high');
-
+    const [selectedStatus, setSelectedStatus] = useState('status');
+    const [selectedPriority, setSelectedPriority] = useState('priority');
+    const [activeClearButton, setActiveClearButton] = useState(false)
     const {
         isCreateSuccessToastActive,
         isDeleteSuccessToastActive,
@@ -50,52 +48,76 @@ export const MainApp = () => {
     }, [setTodoList, todoFromLocalStorage]);
 
     const handleSelectStatusFilterChange = useCallback(
-        (value) => setSelectedStatus(value),
+        (value) => {
+            setSelectedStatus(value);
+            if (value !== 'status') {
+                setActiveClearButton(true)
+            }
+        },
         [],
     );
     const handleSelectPriorityFilterChange = useCallback(
-        (value) => setSelectedPriority(value),
+        (value) => {
+            setSelectedPriority(value)
+            if (value !== 'priority') {
+                setActiveClearButton(true)
+            }
+        },
         [],
     );
 
 
     const todoStatusOptions = [
+        { label: 'Status', value: 'status', disabled: true },
         { label: 'To Do', value: 'todo' },
         { label: 'Complete', value: 'complete' },
     ];
     const todoPriorityOptions = [
+        { label: 'Priority', value: 'priority', disabled: true },
         { label: 'High', value: 'high' },
         { label: 'Medium', value: 'medium' },
         { label: 'Low', value: 'low' },
     ];
 
-    let sortedTodos = todoList.length && todoList?.sort((a, b) => b?.createdAt - a?.createdAt) || [];
-
-    if (selectedStatus === 'todo' && selectedPriority === 'high') {
-        sortedTodos = todoList.filter((todo) => !todo.completed && todo.todoPriority === 'high');
-    }
-    else if (selectedStatus === 'todo' && selectedPriority === 'medium') {
-        sortedTodos = todoList.filter((todo) => !todo.completed && todo.todoPriority === 'medium');
-    }
-    else if (selectedStatus === 'todo' && selectedPriority === 'low') {
-        sortedTodos = todoList.filter((todo) => !todo.completed && todo.todoPriority === 'low');
-    }
-    else if (selectedStatus === 'complete' && selectedPriority === 'high') {
-        sortedTodos = todoList.filter((todo) => todo.completed && todo.todoPriority === 'high');
-    }
-    else if (selectedStatus === 'complete' && selectedPriority === 'medium') {
-        sortedTodos = todoList.filter((todo) => todo.completed && todo.todoPriority === 'medium');
-    }
-    else {
-        sortedTodos = todoList.filter((todo) => todo.completed && todo.todoPriority === 'low');
-    }
+    let sortedTodos = useMemo(() => {
+        return todoList?.length && todoList?.sort((todoCurrent, todoNext) => todoNext?.createdAt - todoCurrent?.createdAt) || [];
+    }, [todoList]);
 
 
+    const filterTodos = useCallback((todos, status, priority) => {
+        // If both filters are set to their default values, return all todos.
+        if (status === 'status' && priority === 'priority') {
+            return todos;
+        }
+        // If user select any filter option, filter todos based on that filter
+        if (status !== 'status' && priority === 'priority') {
+            return todos.filter(todo => status === 'todo' ? !todo.completed : todo.completed);
+        }
+        if (status === 'status' && priority !== 'priority') {
+            return todos.filter(todo => todo.todoPriority === priority);
+        }
+
+        // If user selects both filters, filter todos based on both criteria.
+        return todos.filter(todo => {
+            const isStatusMatch = status === 'todo' ? !todo.completed : todo.completed;
+            const isPriorityMatch = todo.todoPriority === priority;
+            return isStatusMatch && isPriorityMatch;
+        });
+    }, []);
+
+    //  if user selects any filter
+    if (selectedPriority !== 'priority' || selectedStatus !== 'status') {
+        sortedTodos = filterTodos(sortedTodos, selectedStatus, selectedPriority);
+    }
 
 
-    useEffect(() => {
-        console.log("✨ ~ MainApp ~ sortedTodos:", sortedTodos)
-    }, [sortedTodos])
+    const handleClearFilters = useCallback(() => {
+        setSelectedStatus('status');
+        setSelectedPriority('priority');
+        setTodoList(todoFromLocalStorage);
+        setActiveClearButton(false)
+    }, [setTodoList, todoFromLocalStorage])
+
 
     return (
         <div className='mt-[65px]'>
@@ -107,15 +129,21 @@ export const MainApp = () => {
                 onClearButtonClick={handleClearButtonClick}
                 autoComplete="off"
                 placeholder='Search task by name'
+                spellCheck
             />
 
             <div className="flex justify-end gap-2 mt-4">
                 <Select
+                    label="Sort by"
+                    labelInline
+                    // helpText="Filter by status"
                     options={todoStatusOptions}
                     onChange={handleSelectStatusFilterChange}
                     value={selectedStatus}
                 />
                 <Select
+                    label="Sort by"
+                    labelInline
                     options={todoPriorityOptions}
                     onChange={handleSelectPriorityFilterChange}
                     value={selectedPriority}
@@ -125,6 +153,20 @@ export const MainApp = () => {
             </div>
 
             <div className="mt-[50px]">
+                {
+                    activeClearButton && (
+                        <div className="flex justify-end gap-2 mb-4">
+                            <Button
+                                icon={XIcon}
+                                size='large'
+                                variant='tertiary'
+                                onClick={handleClearFilters}
+                            >
+                                Clear Filters
+                            </Button>
+                        </div>
+                    )
+                }
                 <BlockStack gap="500">
                     {
                         (sortedTodos.length > 0) ?
@@ -146,6 +188,7 @@ export const MainApp = () => {
                             )
                     }
                 </BlockStack>
+
             </div>
 
             <ToastComponent

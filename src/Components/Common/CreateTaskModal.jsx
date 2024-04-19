@@ -1,7 +1,7 @@
 
 import { BlockStack, Button, FormLayout, Modal, Select, TextField } from '@shopify/polaris';
 import { PlusIcon } from '@shopify/polaris-icons';
-import { memo, useCallback, useContext, useState } from 'react';
+import { memo, useCallback, useContext, useEffect, useState } from 'react';
 import { TODO_CONTEXT } from '../Context/TodoContext';
 import DueDatePicker from './DueDatePicker';
 let CreateTaskModal = () => {
@@ -20,12 +20,20 @@ let CreateTaskModal = () => {
         // handleChangeTodoName,
     } = useContext(TODO_CONTEXT)
     const [showTaskModal, setShowTaskModal] = useState(false);
-
+    const [errorTodoName, setErrorTodoName] = useState(false);
 
     const toggleTaskCreateModal = useCallback(
         () => setShowTaskModal(!showTaskModal), [showTaskModal]);
 
-    const handleChangeTodoName = useCallback((value) => setTodoName(value), [setTodoName]);
+    const handleChangeTodoName = useCallback((value) => {
+        // for validation while typing
+        if (!value.trim()) {
+            setErrorTodoName("Todo name is required");
+        } else {
+            setErrorTodoName("");
+        }
+        setTodoName(value)
+    }, [setTodoName]);
 
     const handleChangeNotesText = useCallback(
         (value) => setAdditionalNotes(value), [setAdditionalNotes]);
@@ -46,6 +54,13 @@ let CreateTaskModal = () => {
 
 
     const handleCreateTask = () => {
+        if (todoName?.trim() === "") {
+            setErrorTodoName("Todo name is required");
+            return;
+        } else {
+            setErrorTodoName("");
+        }
+
         // const selectedDueDate = selectedDate.toISOString().slice(0, 10);
         const today = new Date()
         const createdAt = today.getTime();
@@ -64,7 +79,9 @@ let CreateTaskModal = () => {
     }
 
 
-
+    useEffect(() => {
+        console.log("✨ ~ CreateTaskModal ~ todoList", todoList)
+    }, [todoList])
 
     const priorityOptions = [
         { label: 'Low', value: 'low' },
@@ -77,8 +94,6 @@ let CreateTaskModal = () => {
         setAdditionalNotes("");
         setTodoName("");
         setTodoPriority("high")
-        console.log("✨ ~ CreateTaskModal ~ selectedDate:", selectedDate)
-        console.log("✨ ~ CreateTaskModal ~ selectedDate:", todoName)
     }
 
     return (
@@ -98,6 +113,7 @@ let CreateTaskModal = () => {
                         onAction: toggleTaskCreateModal,
                     },
                 ]}
+          
             >
                 <Modal.Section>
                     <BlockStack align='start' gap="200">
@@ -107,6 +123,8 @@ let CreateTaskModal = () => {
                             onChange={handleChangeTodoName}
                             placeholder="Example: Do Shopping"
                             autoComplete="off"
+                            requiredIndicator
+                            error={errorTodoName}
                         />
                         <FormLayout>
                             <FormLayout.Group>

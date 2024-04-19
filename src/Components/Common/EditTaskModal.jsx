@@ -1,13 +1,13 @@
 
 import { BlockStack, FormLayout, Modal, Select, TextField } from '@shopify/polaris';
-import { useCallback, useContext, useEffect } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { getFormatedDate } from '../../utils/getFormatedDate';
 import { TODO_CONTEXT } from '../Context/TodoContext';
 import DueDatePicker from './DueDatePicker';
 
 export const EditTaskModal = ({ todo, EditModalActive, setEditModalActive }) => {
     const { todoName: title, todoDueDate: dueDate, todoPriority: priority, additionalNotes: notes, createdAt, createdDate } = todo
-
+    const [errorTodoName, setErrorTodoName] = useState(false);
 
 
     const {
@@ -26,8 +26,6 @@ export const EditTaskModal = ({ todo, EditModalActive, setEditModalActive }) => 
         { label: 'High', value: 'high' },
     ];
 
-    const handleChangeTodoName = useCallback((value) => setTodoName(value), [setTodoName]);
-
     const handleChangeNotesText = useCallback(
         (value) => setAdditionalNotes(value), [setAdditionalNotes]);
 
@@ -43,6 +41,16 @@ export const EditTaskModal = ({ todo, EditModalActive, setEditModalActive }) => 
 
     }, [setAdditionalNotes, setSelectedDate, setTodoName, setTodoPriority],)
 
+    
+    const handleChangeTodoName = useCallback((value) => {
+        // for validation while typing
+        if (!value.trim()) {
+            setErrorTodoName("Todo name is required");
+        } else {
+            setErrorTodoName("");
+        }
+        setTodoName(value)
+    }, [setTodoName]);
 
     const toggleTodoEditModal = useCallback(() => {
         setEditModalActive(!EditModalActive);
@@ -50,6 +58,12 @@ export const EditTaskModal = ({ todo, EditModalActive, setEditModalActive }) => 
     }, [EditModalActive, resetForm, setEditModalActive]);
 
     const handleEditTask = useCallback(() => {
+        if (todoName?.trim() === "") {
+            setErrorTodoName("Todo name is required");
+            return;
+        } else {
+            setErrorTodoName("");
+        }
         const editedTodo = {
             todoName,
             selectedDate,
@@ -84,7 +98,7 @@ export const EditTaskModal = ({ todo, EditModalActive, setEditModalActive }) => 
         <Modal
             open={EditModalActive}
             onClose={toggleTodoEditModal}
-            title={`Edit ${todoName} - created on ${getFormatedDate(new Date(createdDate))}`}
+            title={`You are editing ${todoName} `}
             primaryAction={{
                 content: 'Save',
                 onAction: handleEditTask,
@@ -95,6 +109,11 @@ export const EditTaskModal = ({ todo, EditModalActive, setEditModalActive }) => 
                     onAction: toggleTodoEditModal,
                 },
             ]}
+            footer={
+                <Modal.Section>
+                   {title} was created on {getFormatedDate(new Date(createdDate))}
+                </Modal.Section>
+            }
         >
             <Modal.Section>
                 <BlockStack align='start' gap="200">
@@ -104,6 +123,7 @@ export const EditTaskModal = ({ todo, EditModalActive, setEditModalActive }) => 
                         onChange={handleChangeTodoName}
                         placeholder="Example: Do Shopping"
                         autoComplete="off"
+                        error={errorTodoName}
                     />
                     <FormLayout>
                         <FormLayout.Group>
