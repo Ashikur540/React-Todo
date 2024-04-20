@@ -16,7 +16,6 @@ export const DeleteTaskModal = ({ todoName, active, setActive, createdAt }) => {
             }
         });
         localStorage.setItem("todoItems", JSON.stringify(todos));
-        console.log("✨ ~ handleDeleteTodo ~ todolist:", todos);
         setTodoList(todos);
         toggleDeleteSuccessToast();
         handleChange();

@@ -70,7 +70,6 @@ export const EditTaskModal = ({ todo, EditModalActive, setEditModalActive }) => 
             todoPriority,
             additionalNotes,
         }
-        console.log("✨ ~ handleEditTask ~ editedTodo:", editedTodo)
         const newTodos = todoList.map((todoItem) => {
             if (todoItem?.createdAt === createdAt) {
                 todoItem["todoName"] = editedTodo["todoName"]

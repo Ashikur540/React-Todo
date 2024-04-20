@@ -3,8 +3,6 @@ import { CalendarIcon } from "@shopify/polaris-icons";
 import { memo, useEffect, useRef, useState } from "react";
 
 let DueDatePicker = ({ selectedDate, setSelectedDate, todoDueDate }) => {
-    console.log("✨ ~ DueDatePicker ~ todoDueDate:", todoDueDate)
-
     useEffect(() => {
         if (todoDueDate) {
             setSelectedDate(new Date(todoDueDate))

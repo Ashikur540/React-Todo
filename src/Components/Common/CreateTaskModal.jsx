@@ -1,7 +1,8 @@
 
 import { BlockStack, Button, FormLayout, Modal, Select, TextField } from '@shopify/polaris';
 import { PlusIcon } from '@shopify/polaris-icons';
-import { memo, useCallback, useContext, useEffect, useState } from 'react';
+import { memo, useCallback, useContext, useState } from 'react';
+import { sortTodos } from '../../utils/sortTodos';
 import { TODO_CONTEXT } from '../Context/TodoContext';
 import DueDatePicker from './DueDatePicker';
 let CreateTaskModal = () => {
@@ -70,7 +71,8 @@ let CreateTaskModal = () => {
         }
         // console.log("✨ ~ handleCreateTask ~ taskData:", taskData)
         const updatedTodoList = [...todoList, newTask];
-        setTodoList(updatedTodoList);
+        const finalTodoList = sortTodos(updatedTodoList)
+        setTodoList(finalTodoList);
         localStorage.setItem("todoItems", JSON.stringify(updatedTodoList)); // Update local storage
         toggleTaskCreateModal();
         toggleAddSuccessToast();
@@ -90,6 +92,7 @@ let CreateTaskModal = () => {
         setTodoPriority("high")
     }
 
+
     return (
         <>
             <Modal
@@ -107,7 +110,7 @@ let CreateTaskModal = () => {
                         onAction: toggleTaskCreateModal,
                     },
                 ]}
-          
+
             >
                 <Modal.Section>
                     <BlockStack align='start' gap="200">
@@ -119,6 +122,7 @@ let CreateTaskModal = () => {
                             autoComplete="off"
                             requiredIndicator
                             error={errorTodoName}
+                            focused
                         />
                         <FormLayout>
                             <FormLayout.Group>
