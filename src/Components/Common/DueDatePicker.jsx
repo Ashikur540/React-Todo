@@ -75,6 +75,7 @@ let DueDatePicker = ({ selectedDate, setSelectedDate, todoDueDate }) => {
                             selected={selectedDate}
                             onMonthChange={handleMonthChange}
                             onChange={handleDateSelection}
+                            disableDatesBefore={new Date(new Date().setHours(0, 0, 0, 0))}
                         />
                     </Card>
                 </Popover>
