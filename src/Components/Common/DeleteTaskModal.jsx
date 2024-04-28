@@ -1,14 +1,13 @@
 import { Modal, TextContainer } from '@shopify/polaris';
 import { useCallback, useContext } from 'react';
 import getTodoFromLocalStorage from '../../utils/getTodoFromLocalStorge';
-import { TODO_CONTEXT } from '../Context/TodoContext';
+import { TODO_CONTEXT } from '../context/TodoContext';
 
 export const DeleteTaskModal = ({ todoName, active, setActive, createdAt }) => {
     const { setTodoList, toggleDeleteSuccessToast } = useContext(TODO_CONTEXT)
     const handleChange = useCallback(() => setActive(!active), [active, setActive]);
 
     const handleDeleteTodo = () => {
-        // console.log("✨ ~ DeleteTaskModal ~ createdAt:", createdAt)
         let todos = getTodoFromLocalStorage();
         todos.filter((todo) => {
             if (todo.createdAt === createdAt) {

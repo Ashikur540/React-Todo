@@ -1,13 +1,9 @@
 import { BlockStack, Card, InlineGrid, InlineStack, Text } from '@shopify/polaris';
+
 import TaskCardOption from './TaskCardOption';
-import { useEffect } from 'react';
 
 export const TaskCard = ({ todo }) => {
-    const { todoName, todoDueDate, todoPriority,  } = todo || {}
-    const dueDateObj = new Date(todoDueDate);
-    useEffect(() => {
-
-    }, [todo?.completed])
+    const { todoName, todoDueDate, todoPriority, } = todo || {}
     return (
         <>
             <Card roundedAbove="sm">
@@ -21,7 +17,7 @@ export const TaskCard = ({ todo }) => {
                         </InlineGrid>
                         <InlineStack wrap={false} gap='800'>
                             <Text as="p" variant="bodyMd">
-                                Due Date: {dueDateObj?.toLocaleDateString()}
+                                Due Date: {new Date(todoDueDate)?.toLocaleDateString()}
                             </Text>
                             <Text as="p" variant="bodyMd">
                                 Priority: {todoPriority}

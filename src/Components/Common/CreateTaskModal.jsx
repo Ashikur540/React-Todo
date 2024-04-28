@@ -3,10 +3,9 @@ import { BlockStack, Button, FormLayout, Modal, Select, TextField } from '@shopi
 import { PlusIcon } from '@shopify/polaris-icons';
 import { memo, useCallback, useContext, useState } from 'react';
 import { sortTodos } from '../../utils/sortTodos';
-import { TODO_CONTEXT } from '../Context/TodoContext';
+import { TODO_CONTEXT } from '../context/TodoContext';
 import DueDatePicker from './DueDatePicker';
 let CreateTaskModal = () => {
-    // const [selectedDate, setSelectedDate] = useState(new Date());
     const {
         todoList,
         setTodoList,
@@ -16,15 +15,15 @@ let CreateTaskModal = () => {
         additionalNotes, setAdditionalNotes,
         selectedDate, setSelectedDate,
         isTodoCompleted,
-        // handleChangePriority,
-        // handleChangeNotesText,
-        // handleChangeTodoName,
     } = useContext(TODO_CONTEXT)
     const [showTaskModal, setShowTaskModal] = useState(false);
     const [errorTodoName, setErrorTodoName] = useState(false);
 
     const toggleTaskCreateModal = useCallback(
-        () => setShowTaskModal(!showTaskModal), [showTaskModal]);
+        () => {
+            setShowTaskModal(!showTaskModal);
+            setErrorTodoName("")
+        }, [showTaskModal]);
 
     const handleChangeTodoName = useCallback((value) => {
         // for validation while typing
@@ -89,7 +88,8 @@ let CreateTaskModal = () => {
         setSelectedDate(new Date());
         setAdditionalNotes("");
         setTodoName("");
-        setTodoPriority("high")
+        setTodoPriority("high");
+        setErrorTodoName("")
     }
 
 

@@ -2,29 +2,32 @@
 import { BlockStack, FormLayout, Modal, Select, TextField } from '@shopify/polaris';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { getFormatedDate } from '../../utils/getFormatedDate';
-import { TODO_CONTEXT } from '../Context/TodoContext';
+import { todoPriorityOptions } from '../constants/todoOptions';
+import { TODO_CONTEXT } from '../context/TodoContext';
 import DueDatePicker from './DueDatePicker';
 
 export const EditTaskModal = ({ todo, EditModalActive, setEditModalActive }) => {
-    const { todoName: title, todoDueDate: dueDate, todoPriority: priority, additionalNotes: notes, createdAt, createdDate } = todo
+    const {
+        todoName: title,
+        todoDueDate: dueDate,
+        todoPriority: priority,
+        additionalNotes: notes,
+        createdAt,
+        createdDate
+    } = todo
     const [errorTodoName, setErrorTodoName] = useState(false);
 
 
     const {
         todoList, setTodoList,
-        todoName, todoDueDate, todoPriority, additionalNotes,
+        todoName, todoDueDate,
+        todoPriority, additionalNotes,
         selectedDate, setSelectedDate,
         setTodoName,
         setTodoPriority,
         setAdditionalNotes,
         toggleEditSuccessToast,
     } = useContext(TODO_CONTEXT);
-
-    const priorityOptions = [
-        { label: 'Low', value: 'low' },
-        { label: 'Medium', value: 'medium' },
-        { label: 'High', value: 'high' },
-    ];
 
     const handleChangeNotesText = useCallback(
         (value) => setAdditionalNotes(value), [setAdditionalNotes]);
@@ -41,7 +44,7 @@ export const EditTaskModal = ({ todo, EditModalActive, setEditModalActive }) => 
 
     }, [setAdditionalNotes, setSelectedDate, setTodoName, setTodoPriority],)
 
-    
+
     const handleChangeTodoName = useCallback((value) => {
         // for validation while typing
         if (!value.trim()) {
@@ -110,7 +113,7 @@ export const EditTaskModal = ({ todo, EditModalActive, setEditModalActive }) => 
             ]}
             footer={
                 <Modal.Section>
-                   {title} was created on {getFormatedDate(new Date(createdDate))}
+                    {title} was created on {getFormatedDate(new Date(createdDate))}
                 </Modal.Section>
             }
         >
@@ -133,7 +136,7 @@ export const EditTaskModal = ({ todo, EditModalActive, setEditModalActive }) => 
                             />
                             <Select
                                 label="Priority Level"
-                                options={priorityOptions}
+                                options={todoPriorityOptions}
                                 onChange={handleChangePriority}
                                 value={todoPriority}
                             />

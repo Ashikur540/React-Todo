@@ -13,8 +13,6 @@ let DueDatePicker = ({ selectedDate, setSelectedDate, todoDueDate }) => {
 
     }, [setSelectedDate, todoDueDate])
 
-
-
     const [visible, setVisible] = useState(false);
     const [{ month, year }, setDate] = useState({
         month: selectedDate.getMonth(),
@@ -24,9 +22,6 @@ let DueDatePicker = ({ selectedDate, setSelectedDate, todoDueDate }) => {
     // console.log("✨ ~ DueDatePicker ~ formattedValue:", formattedValue)
     const datePickerRef = useRef(null);
 
-    function handleInputValueChange() {
-        console.log("handleInputValueChange");
-    }
     function handleOnClose() {
         setVisible(false);
     }
@@ -63,7 +58,7 @@ let DueDatePicker = ({ selectedDate, setSelectedDate, todoDueDate }) => {
                             prefix={<Icon source={CalendarIcon} />}
                             value={formattedValue}
                             onFocus={() => setVisible(true)}
-                            onChange={handleInputValueChange}
+                            // onChange={handleInputValueChange}
                             autoComplete="off"
                         />
                     }

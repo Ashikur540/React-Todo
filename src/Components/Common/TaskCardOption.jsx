@@ -1,7 +1,8 @@
 import { ActionList, Button, Popover } from '@shopify/polaris';
 import { MenuHorizontalIcon } from '@shopify/polaris-icons';
 import { useCallback, useContext, useState } from 'react';
-import { TODO_CONTEXT } from '../Context/TodoContext';
+
+import { TODO_CONTEXT } from '../context/TodoContext';
 import { DeleteTaskModal } from './DeleteTaskModal';
 import { EditTaskModal } from './EditTaskModal';
 

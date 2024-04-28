@@ -1,18 +1,23 @@
-import { BlockStack, Button, EmptyState, Icon, LegacyCard, Pagination, Select, TextField } from '@shopify/polaris';
+import { BlockStack, Button, Icon, Select, TextField } from '@shopify/polaris';
 import { SearchIcon, XIcon } from '@shopify/polaris-icons';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+
 import getTodoFromLocalStorage from '../utils/getTodoFromLocalStorge';
-import CreateTaskModal from './Common/CreateTaskModal';
-import { TaskCard } from './Common/TaskCard';
-import ToastComponent from './Common/ToastComponent';
-import { TODO_CONTEXT } from './Context/TodoContext';
+import { TodosPagination } from './TodosPagination';
+import CreateTaskModal from './common/CreateTaskModal';
+import { TaskCard } from './common/TaskCard';
+import ToastComponent from './common/ToastComponent';
+import { TodoEmptyState } from './common/TodoEmptyState';
+import { todoPriorityOptions, todoStatusOptions } from './constants/todoOptions';
+import { TODO_CONTEXT } from './context/TodoContext';
+
 export const MainApp = () => {
     const [textFieldValue, setTextFieldValue] = useState('');
     const [selectedStatus, setSelectedStatus] = useState('status');
     const [selectedPriority, setSelectedPriority] = useState('priority');
     const [activeClearButton, setActiveClearButton] = useState(false);
     const [TotalDataPerPage, setTotalDataPerPage] = useState(10);
-    const [totalTodoDataCount, setTotalTodoDataCount] = useState(getTodoFromLocalStorage().length);
+    const [totalTodoDataCount, setTotalTodoDataCount] = useState(getTodoFromLocalStorage()?.length);
     const [currentPageNo, setCurrentPageNo] = useState(1);
     const totalPage = Math.ceil(totalTodoDataCount / TotalDataPerPage);
     const {
@@ -73,19 +78,6 @@ export const MainApp = () => {
         },
         [],
     );
-
-
-    const todoStatusOptions = [
-        { label: 'Status', value: 'status', disabled: true },
-        { label: 'To Do', value: 'todo' },
-        { label: 'Complete', value: 'complete' },
-    ];
-    const todoPriorityOptions = [
-        { label: 'Priority', value: 'priority', disabled: true },
-        { label: 'High', value: 'high' },
-        { label: 'Medium', value: 'medium' },
-        { label: 'Low', value: 'low' },
-    ];
 
     // this handles slicing the todos from the whole todList according to the pgaination 
     const handlePaginateTodos = useCallback(() => {
@@ -213,34 +205,16 @@ export const MainApp = () => {
                                 )
                             })
                             :
-                            (
-                                <LegacyCard subdued>
-                                    <EmptyState
-                                        heading={`No todo item found!`}
-                                        image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
-                                    >
-                                        <p>Click on the add todo button to add new</p>
-                                    </EmptyState>
-                                </LegacyCard>
-                            )
+                            <TodoEmptyState />
                     }
                 </BlockStack>
 
-                <div
-                    style={{
-                        border: '1px solid var(--p-color-border)'
-                    }}
-                    className="mt-8 mb-4 rounded-md"
-                >
-                    <Pagination
-                        onPrevious={handlePaginatePrevious}
-                        onNext={handlePaginateNext}
-                        type="page"
-                        hasNext
-                        hasPrevious
-                        label={`${currentPageNo}-${totalPage} of ${todoList?.length} todo items`}
-                    />
-                </div>
+                <TodosPagination
+                    handlePaginatePrevious={handlePaginatePrevious}
+                    handlePaginateNext={handlePaginateNext}
+                    currentPageNo={currentPageNo}
+                    totalPage={totalPage}
+                />
             </div>
 
             <ToastComponent
