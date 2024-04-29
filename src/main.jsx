@@ -7,11 +7,11 @@ import App from './App.jsx';
 import TodoProvider from './Components/context/TodoContext.jsx';
 import './index.css';
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <AppProvider i18n={enTranslations}>
       <TodoProvider>
         <App />
       </TodoProvider>
     </AppProvider>
-  </React.StrictMode>,
+  // </React.StrictMode>,
 )

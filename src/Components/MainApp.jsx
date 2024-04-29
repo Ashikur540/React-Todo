@@ -17,9 +17,10 @@ export const MainApp = () => {
     const [selectedPriority, setSelectedPriority] = useState('priority');
     const [activeClearButton, setActiveClearButton] = useState(false);
     const [TotalDataPerPage, setTotalDataPerPage] = useState(10);
-    const [totalTodoDataCount, setTotalTodoDataCount] = useState(getTodoFromLocalStorage()?.length);
+    const [totalTodoDataCount, setTotalTodoDataCount] = useState(0);
     const [currentPageNo, setCurrentPageNo] = useState(1);
-    const totalPage = Math.ceil(totalTodoDataCount / TotalDataPerPage);
+    const [totalPage, setTotalPage] = useState(1)
+    // const totalPage = Math.ceil(totalTodoDataCount / TotalDataPerPage);
     const {
         isCreateSuccessToastActive,
         isDeleteSuccessToastActive,
@@ -35,7 +36,18 @@ export const MainApp = () => {
 
     const [paginatedTodos, setPaginatedTodos] = useState([]);
 
-    const todoFromLocalStorage = getTodoFromLocalStorage();
+    const todoFromLocalStorage = useMemo(() => getTodoFromLocalStorage() || [], []);
+    // const todoFromLocalStorage =  getTodoFromLocalStorage() 
+
+    useEffect(() => {
+        setTotalTodoDataCount(todoList?.length);
+    }, [todoList]);
+
+    useEffect(() => {
+        console.log("✨ ~ MainApp ~ totalPage ->:", Math.ceil(totalTodoDataCount / TotalDataPerPage))
+        setTotalPage(Math.ceil(totalTodoDataCount / TotalDataPerPage) === 0 ? 1 : Math.ceil(totalTodoDataCount / TotalDataPerPage))
+        console.log("✨ ~ MainApp ~ totalPage:", totalPage)
+    }, [totalTodoDataCount, TotalDataPerPage, totalPage])
 
     // handle serach 
     const handleSearchResult = useCallback((query) => {
@@ -79,7 +91,7 @@ export const MainApp = () => {
         [],
     );
 
-    // this handles slicing the todos from the whole todList according to the pgaination 
+    // this handles slicing the todos from the whole todList according to the pagination 
     const handlePaginateTodos = useCallback(() => {
         const startIndex = (currentPageNo - 1) * TotalDataPerPage;
         const endIndex = startIndex + TotalDataPerPage;
@@ -92,7 +104,7 @@ export const MainApp = () => {
     }, [handlePaginateTodos]);
 
     // this is todos of the current index -> sorted by default 
-    let defaultSortedTodos = useMemo(() => {
+    let filteredTodos = useMemo(() => {
         return paginatedTodos?.length && paginatedTodos?.sort((todoCurrent, todoNext) => todoNext?.createdAt - todoCurrent?.createdAt) || [];
     }, [paginatedTodos]);
 
@@ -137,7 +149,7 @@ export const MainApp = () => {
 
     //  if user selects any filter
     if (selectedPriority !== 'priority' || selectedStatus !== 'status') {
-        defaultSortedTodos = filterTodos(paginatedTodos, selectedStatus, selectedPriority);
+        filteredTodos = filterTodos(paginatedTodos, selectedStatus, selectedPriority);
     }
 
 
@@ -198,8 +210,8 @@ export const MainApp = () => {
                 }
                 <BlockStack gap="500">
                     {
-                        (defaultSortedTodos?.length > 0) ?
-                            defaultSortedTodos?.map((todo, i) => {
+                        (filteredTodos?.length > 0) ?
+                            filteredTodos?.map((todo, i) => {
                                 return (
                                     <TaskCard key={i} todo={todo} />
                                 )

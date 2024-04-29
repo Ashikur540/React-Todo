@@ -36,7 +36,8 @@ let CreateTaskModal = () => {
     }, [setTodoName]);
 
     const handleChangeNotesText = useCallback(
-        (value) => setAdditionalNotes(value), [setAdditionalNotes]);
+        (value) => setAdditionalNotes(value),
+        [setAdditionalNotes]);
 
     const handleChangePriority = useCallback(
         (value) => setTodoPriority(value),
@@ -60,11 +61,8 @@ let CreateTaskModal = () => {
         } else {
             setErrorTodoName("");
         }
-
-        // const selectedDueDate = selectedDate.toISOString().slice(0, 10);
         const today = new Date()
         const createdAt = today.getTime();
-        // const createdDate = today.toLocaleDateString()
         const newTask = {
             createdAt, todoName, todoDueDate: selectedDate, todoPriority, additionalNotes, createdDate: today, completed: isTodoCompleted
         }

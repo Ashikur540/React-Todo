@@ -14,18 +14,13 @@ export const TodosPagination = ({
     } = useContext(TODO_CONTEXT);
 
     return (
-        <div
-            style={{
-                border: '1px solid var(--p-color-border)'
-            }}
-            className="mt-8 mb-4 rounded-md"
-        >
+        <div className="mt-8 mb-4 rounded-md">
             <Pagination
                 onPrevious={handlePaginatePrevious}
                 onNext={handlePaginateNext}
                 type="page"
-                hasNext
-                hasPrevious
+                hasNext={totalPage > 1}
+                hasPrevious={totalPage > 1}
                 label={`${currentPageNo}-${totalPage} of ${todoList?.length} todo items`}
             />
         </div>

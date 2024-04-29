@@ -1,4 +1,5 @@
 import { ActionList, Button, Popover } from '@shopify/polaris';
+import { EditIcon,DeleteIcon,CheckIcon} from '@shopify/polaris-icons';
 import { MenuHorizontalIcon } from '@shopify/polaris-icons';
 import { useCallback, useContext, useState } from 'react';
 
@@ -58,17 +59,20 @@ const TaskCardOption = ({ todo }) => {
                     items={[
                         {
                             content: 'Edit',
+                            icon:EditIcon,
                             onAction: handleEditModal,
                             secondary: true
                         },
                         {
-                            content: 'Delete',
-                            onAction: handleDeleteModal,
-                            destructive: true
+                            content: 'Complete',
+                            icon:CheckIcon,
+                            onAction: handleCompleteTodo,
                         },
                         {
-                            content: 'Complete',
-                            onAction: handleCompleteTodo,
+                            content: 'Delete',
+                            icon:DeleteIcon,
+                            onAction: handleDeleteModal,
+                            destructive: true
                         },
                     ]}
                 />
