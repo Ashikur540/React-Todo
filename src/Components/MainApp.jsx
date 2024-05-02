@@ -19,7 +19,10 @@ export const MainApp = () => {
     const [TotalDataPerPage, setTotalDataPerPage] = useState(10);
     const [totalTodoDataCount, setTotalTodoDataCount] = useState(0);
     const [currentPageNo, setCurrentPageNo] = useState(1);
-    const [totalPage, setTotalPage] = useState(1)
+    const [totalPage, setTotalPage] = useState(1);
+    const [emptyTodoMessage, setEmptyTodoMessage] = useState(
+        "Click on the add todo button to add new."
+    );
     // const totalPage = Math.ceil(totalTodoDataCount / TotalDataPerPage);
     const {
         isCreateSuccessToastActive,
@@ -44,19 +47,21 @@ export const MainApp = () => {
     }, [todoList]);
 
     useEffect(() => {
-        console.log("✨ ~ MainApp ~ totalPage ->:", Math.ceil(totalTodoDataCount / TotalDataPerPage))
-        setTotalPage(Math.ceil(totalTodoDataCount / TotalDataPerPage) === 0 ? 1 : Math.ceil(totalTodoDataCount / TotalDataPerPage))
-        console.log("✨ ~ MainApp ~ totalPage:", totalPage)
+        setTotalPage(
+            Math.ceil(totalTodoDataCount / TotalDataPerPage) === 0 ? 1
+                : Math.ceil(totalTodoDataCount / TotalDataPerPage)
+        )
     }, [totalTodoDataCount, TotalDataPerPage, totalPage])
 
     // handle serach 
     const handleSearchResult = useCallback((query) => {
-        const searchResultuntTodos = todoFromLocalStorage.filter((todo) => {
+        const searchResultantTodos = todoFromLocalStorage.filter((todo) => {
             return todo.todoName
                 .toLocaleLowerCase()
                 .includes(query.toLocaleLowerCase().trim());
         }) || [];
-        setTodoList(searchResultuntTodos);
+        setTodoList(searchResultantTodos);
+        setEmptyTodoMessage(searchResultantTodos?.length === 0 && "Try different keyword")
     }, [setTodoList, todoFromLocalStorage]);
 
     const handleTextFieldChange = useCallback(
@@ -158,45 +163,40 @@ export const MainApp = () => {
         setSelectedPriority('priority');
         setTodoList(todoFromLocalStorage);
         setActiveClearButton(false)
+        setEmptyTodoMessage(
+            "Click on the add todo button to add new."
+        )
     }, [setTodoList, todoFromLocalStorage])
+
+
+    useEffect(() => {
+        activeClearButton && filteredTodos?.length === 0 &&
+            setEmptyTodoMessage("Try different filter options.")
+
+    }, [activeClearButton, filteredTodos?.length])
 
     return (
         <div className='mt-[65px]'>
-            <TextField
-                prefix={<Icon source={SearchIcon} tone="base" />}
-                value={textFieldValue}
-                onChange={handleTextFieldChange}
-                clearButton
-                onClearButtonClick={handleClearButtonClick}
-                autoComplete="off"
-                placeholder='Search task by name'
-                spellCheck
-            />
-
-            <div className="flex justify-end gap-2 mt-4">
-                <Select
-                    label="Sort by"
-                    labelInline
-                    // helpText="Filter by status"
-                    options={todoStatusOptions}
-                    onChange={handleSelectStatusFilterChange}
-                    value={selectedStatus}
-                />
-                <Select
-                    label="Sort by"
-                    labelInline
-                    options={todoPriorityOptions}
-                    onChange={handleSelectPriorityFilterChange}
-                    value={selectedPriority}
-                />
-
+            <div className="flex justify-between items-stretch gap-2">
+                <div className="flex-1">
+                    <TextField
+                        prefix={<Icon source={SearchIcon} tone="base" />}
+                        value={textFieldValue}
+                        onChange={handleTextFieldChange}
+                        clearButton
+                        onClearButtonClick={handleClearButtonClick}
+                        autoComplete="off"
+                        placeholder='Search task by name'
+                        spellCheck
+                    />
+                </div>
                 <CreateTaskModal />
             </div>
 
-            <div className="mt-[50px]">
+            <div className="flex justify-end gap-2 mt-4">
                 {
                     activeClearButton && (
-                        <div className="flex justify-end gap-2 mb-4">
+                        <div className="flex justify-start gap-2 mb-4">
                             <Button
                                 icon={XIcon}
                                 size='large'
@@ -208,6 +208,24 @@ export const MainApp = () => {
                         </div>
                     )
                 }
+                <Select
+                    label="Filter by"
+                    labelInline
+                    // helpText="Filter by status"
+                    options={todoStatusOptions}
+                    onChange={handleSelectStatusFilterChange}
+                    value={selectedStatus}
+                />
+                <Select
+                    label="Filter by"
+                    labelInline
+                    options={todoPriorityOptions}
+                    onChange={handleSelectPriorityFilterChange}
+                    value={selectedPriority}
+                />
+            </div>
+
+            <div className="mt-[40px]">
                 <BlockStack gap="500">
                     {
                         (filteredTodos?.length > 0) ?
@@ -217,16 +235,20 @@ export const MainApp = () => {
                                 )
                             })
                             :
-                            <TodoEmptyState />
+                            <TodoEmptyState
+                                emptyTodoMessage={emptyTodoMessage}
+                            />
                     }
                 </BlockStack>
-
-                <TodosPagination
-                    handlePaginatePrevious={handlePaginatePrevious}
-                    handlePaginateNext={handlePaginateNext}
-                    currentPageNo={currentPageNo}
-                    totalPage={totalPage}
-                />
+                {
+                    todoList?.length > TotalDataPerPage &&
+                    (<TodosPagination
+                        handlePaginatePrevious={handlePaginatePrevious}
+                        handlePaginateNext={handlePaginateNext}
+                        currentPageNo={currentPageNo}
+                        totalPage={totalPage}
+                    />)
+                }
             </div>
 
             <ToastComponent
